@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zhalla">
+<meta name="theme-color" content="#050a18">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Zhalla's Little Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Noto+Nastaliq+Urdu&family=Noto+Naskh+Arabic&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f4d58d;--teal:#5ff5d2;--pink:#ff9ec7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#050a18;color:#eaf2ff;font-family:'Cormorant Garamond',serif;font-size:20px;overflow:hidden}
+canvas#bg{position:fixed;inset:0;z-index:0}
+#app{position:relative;z-index:1;height:100%;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 16px 34px;text-align:center}
+h1,h2{font-family:'Cinzel Decorative',serif;color:var(--gold);margin:.3em 0;text-shadow:0 0 18px #f4d58d66}
+h1{font-size:clamp(28px,7vw,52px)}h2{font-size:clamp(20px,5vw,30px)}
+p{max-width:580px;line-height:1.45;margin:.4em 0}
+.btn{font-family:inherit;font-size:20px;color:#1a1200;background:linear-gradient(#ffe9a8,#e8b94f);border:0;border-radius:40px;padding:11px 28px;margin:10px 5px 0;cursor:pointer;box-shadow:0 0 22px #f4d58d88}
+.btn.alt{background:linear-gradient(#ffd0e4,#ff9ec7);box-shadow:0 0 22px #ff9ec788}
+.btn:active{transform:scale(.96)}
+#stage{position:relative;width:min(92vw,560px);height:min(52vh,400px);border:1px solid #5ff5d255;border-radius:20px;background:#0a1a2acc;overflow:hidden;user-select:none}
+.dots{display:flex;gap:6px;margin:6px 0;justify-content:center}.dot{width:11px;height:11px;border-radius:50%;background:#1e2d4a}.dot.on{background:var(--pink);box-shadow:0 0 10px var(--pink)}
+.t{position:absolute;cursor:pointer;font-size:36px;transition:left 2.5s linear,top 2.5s linear;filter:drop-shadow(0 0 8px #ffeb7a)}
+.star{position:absolute;width:44px;height:44px;border-radius:50%;background:#16264a;border:2px solid var(--teal);color:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;transform:translate(-50%,-50%)}
+.star.ok{background:var(--gold);color:#222;box-shadow:0 0 20px var(--gold)}
+.q button.opt{display:block;width:84%;margin:8px auto;padding:10px;font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--teal);border-radius:12px;cursor:pointer}
+.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.bloom{position:absolute;font-size:34px;transform:scale(0);transition:transform .5s cubic-bezier(.3,1.8,.5,1)}.bloom.on{transform:scale(1);filter:drop-shadow(0 0 10px var(--pink))}
+.gift{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:110px;cursor:pointer;filter:drop-shadow(0 0 25px var(--pink));transition:.15s}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px;height:100%;align-content:center}
+.mc{aspect-ratio:1;border-radius:12px;background:#16264a;border:1px solid var(--teal);font-size:30px;color:#fff;cursor:pointer;padding:0}
+.mc.on{background:#2a1f45;border-color:var(--pink)}.mc.ok{background:#1d3a35;border-color:var(--gold)}
+.m3{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:0 auto;width:min(calc(100% - 24px),calc(min(60vh,460px) - 80px))}
+.m3c{aspect-ratio:1;border-radius:10px;background:#16264a;border:1px solid #5ff5d255;font-size:24px;padding:0;cursor:pointer;color:#fff;transition:transform .2s,opacity .2s}
+.m3c.sel{border-color:var(--gold);box-shadow:0 0 12px var(--gold);transform:scale(1.08)}.m3c.pop{opacity:0;transform:scale(.3)}
+.lt{display:inline-block;width:46px;height:46px;margin:4px;font:inherit;font-size:22px;color:#fff;background:#16264a;border:1px solid var(--teal);border-radius:10px;cursor:pointer}
+.card{background:#0b1730e6;border:1px solid var(--gold);border-radius:20px;padding:20px;max-width:600px;width:100%;box-shadow:0 0 40px #f4d58d33;animation:fade .8s;margin:auto}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}}
+.letter{max-height:42vh;overflow:auto;padding:4px 10px;text-align:left;white-space:pre-line}
+.ur{direction:rtl;font-family:'Noto Nastaliq Urdu',serif;line-height:2.1}
+.ku{direction:rtl;font-family:'Noto Naskh Arabic','Noto Sans Arabic',serif;line-height:1.8}
+.big{font-size:clamp(22px,5vw,30px);color:var(--teal)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.tile{font:inherit;color:#eaf2ff;background:#16264a;border:1px solid var(--teal);border-radius:14px;padding:8px 4px;cursor:pointer}
+.tile.dn{border-color:var(--gold);background:#2a2a1f}.tile.lk{opacity:.55;border-style:dashed}
+.wish{font-size:24px;min-height:110px;display:flex;align-items:center;justify-content:center;color:var(--pink)}
+.sky{position:relative;height:260px;border-radius:16px;background:#0a1a2acc;border:1px solid #5ff5d255;overflow:hidden}
+.lan{position:absolute;bottom:-40px;text-align:center;transition:bottom 9s linear,opacity 9s;opacity:1;width:110px;font-size:13px}
+.lan b{display:block;font-size:34px}
+input{font:inherit;font-size:18px;padding:9px 14px;border-radius:20px;border:1px solid var(--teal);background:#0a1a2a;color:#fff;width:70%}
+.credit{position:fixed;bottom:6px;left:0;right:0;z-index:2;font-size:14px;color:#8fa3c7;text-align:center;pointer-events:none}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div id="app"></div>
+<div class="credit">Made by Abdurrahman, your friend</div>
+<script>
+/* =============== EDIT ME: all the words live here =============== */
+const NAME_SO = "ژاڵە";   // Zhalla in Sorani Kurdish script: used everywhere on screen
+const NAME_UR = "ژالہ";   // Zhalla in Urdu: used only inside the Urdu birthday line
+const USERNAME = "lordzhalla";
+const PASSWORD = "oleanderturns18";
+const HINT = "Hint: the flower in your name + the age you're turning 🌸";
+
+/* Schedule: 9 levels, one every 3 days, each at 12:00 AM Hawler (Erbil) time, UTC+3.
+   Level 1 = 23 Nov, level 9 = 17 Dec (her birthday). */
+const BDAY = Date.parse('2026-12-17T00:00:00+03:00');
+const STEP_DAYS = 3;
+const GAME_START = BDAY - 8*STEP_DAYS*864e5;
+const TZ = 'Asia/Baghdad';  // Hawler/Erbil time zone
+
+/* Messages shown after each level (level 9 is the birthday letter). */
+const MESSAGES = [
+ "🌸 Your name\nZhalla means oleander: a flower that blooms in strong sun and hard seasons. I think it suits you: gentle to look at, strong underneath. Your first light is lit! ✨",
+ "🌺 Little joys\nMatching petals is easy; finding good people is harder. I'm glad that in this huge, noisy internet, we found each other as friends.",
+ "🧩 Sharp mind\nYou solved them because you're thoughtful and curious. Never lose that. It makes talking to you so interesting.",
+ "🌌 Being you\nIn a huge sky, some stars stand out without even trying. You're a great friend just by being yourself, and I appreciate that.",
+ "🔤 Words\nYou love stories and words, so here are mine: thank you for being an honest, kind friend. It means more than I usually say. 😊",
+ "🃏 Memories\nGood friendships are made of small moments: a message that made you smile, a random chat, a shared laugh. I'm glad I have those with you.",
+ "🌙 Getting to know you\nI don't know everything about you, and I like that. There's always something new to learn about a person worth knowing.",
+ "⭐ Your dreams\nYour dreams matter, every one of them. I'm studying hard to become an AI scientist, so I know how long the road can feel. Keep going. Your friend is cheering for you! 🎉",
+ "🎂 All nine lights\nThank you for playing, and for being you. Happy birthday, Zhalla! 🎉"
+];
+
+const FRAGRANCE_WISH = "Like an oleander in bloom, you fill the air around you with a gentle fragrance. You don't have to do anything special: just by existing in this universe, you make the people around you feel at ease and the world a little kinder. I hope you always know how much good you bring to your friends and everyone you meet. 🌸";
+
+const QUIZ = [ // first answer correct unless any:true (every answer accepted)
+ {q:"In Sorani Kurdish, what does “Zhalla” mean?",a:["Oleander 🌸","Moonlight","Rainfall"]},
+ {q:"Which animal is your favourite?",a:["Rabbit 🐰","Cat","Owl"],any:true},
+ {q:"Which author do you love?",a:["Chiwan Haco","Haruki Murakami","Jane Austen"],any:true}, // check spelling
+ {q:"How old are you turning on 17 December 2026?",a:["18","16","21"]}
+];
+const RIDDLES = [ // a = accepted words
+ {q:"I bloom in the summer heat, in pink and white. You carry my name. What am I?",a:["oleander","zhalla","zhala","jhalla"],hint:"Think about the meaning of your own name.",show:"Oleander 🌸"},
+ {q:"I hide by day and wear a million diamonds by night. I never speak, yet I guide the lost. What am I?",a:["star","sky"],hint:"Look up after dark.",show:"The stars ⭐"},
+ {q:"I have pages but no wings, yet I can take you to a thousand worlds. What am I?",a:["book","novel","story"],hint:"You love reading me.",show:"A book 📖"}
+];
+const BDAY_RIDDLES = [
+ {q:"I'm round and I glow at night. I change from a thin curve to a full circle and back. What am I?",a:["moon"],hint:"Look up tonight.",show:"The moon 🌙"},
+ {q:"I have long soft ears, I love carrots, and I hop instead of walk. What am I?",a:["rabbit","bunny","hare"],hint:"Your favourite animal.",show:"A rabbit 🐰"},
+ {q:"I'm sweet, I have candles, and you make a wish before I'm cut. What am I?",a:["cake"],hint:"You'll see me on every birthday.",show:"A birthday cake 🎂"}
+];
+const WORDS = [ // c = clue, w = word
+ {w:"BLOOM",c:"What an oleander does in summer 🌸"},{w:"STARS",c:"Tiny lights in the night sky ✨"},
+ {w:"BOOK",c:"Pages full of stories 📖"},{w:"RABBIT",c:"Soft, long ears, loves to hop 🐰"}
+];
+const BDAY_WORDS = [
+ {w:"CAKE",c:"Sweet, and it has candles 🎂"},{w:"CANDLE",c:"You blow it out and make a wish 🕯️"},{w:"OLEANDER",c:"The flower in your name 🌸"}
+];
+const FINAL_LETTER = `Dear Zhalla,
+
+Happy 18th birthday! 🎂🎉
+
+Turning 18 is a big step, but I hope you always stay the thoughtful, kind and curious person you already are. The world needs more people like you.
+
+I built this little universe because a friend like you deserves more than a quick text. You make ordinary days lighter, and I'm really glad our paths crossed, from Tumblr to Instagram and everything since.
+
+My wish for you is simple: calm when you need rest, courage when you need to be brave, and lots of small joys: a good book, a quiet night, a soft bunny, a laugh that surprises you.
+
+Whatever you decide to become, be proud of it. I'll be cheering for you from Mumbai, always as your friend.
+
+Happy birthday, Zhalla! 🎉
+Your friend,
+Abdurrahman`;
+const URDU = "ژالہ، سالگرہ مبارک ہو! تمہارا یہ سال خوشیوں، سکون اور اچھی کتابوں سے بھرا رہے۔";
+const SORANI = "ڕۆژی لەدایکبوونت پیرۆز بێت، ژاڵە";
+const WISHES = [
+ "May your heart always feel at home.","May you read stories that move you.","May you always be treated with kindness.",
+ "May you find calm on busy days.","May your dreams grow like oleander in the sun.","May you laugh until your cheeks hurt.",
+ "May you never doubt your worth.","May people listen when you speak.","May your nights be peaceful and starry.",
+ "May your year be full of gentle surprises.","May you meet people who feel like home.","May you be proud of how far you've come.",
+ "May you always have time for what you love.","May rest never feel like guilt.","May you have the courage to try new things.",
+ "May every little rabbit hop bring you joy.","May your future surprise you in the best way.","May you always know you are appreciated."
+];
+/* ================================================================== */
+
+const $=s=>document.querySelector(s),app=$('#app'),rnd=(a,b)=>a+Math.random()*(b-a);
+const LS={g:k=>{try{return localStorage[k]}catch(_){return null}},s:(k,v)=>{try{localStorage[k]=v}catch(_){}}};
+const PREVIEW=location.search.includes('preview=1');
+let done;try{done=JSON.parse(LS.g('zd')||'null')}catch(_){}
+if(!Array.isArray(done)||done.length!=9)done=Array(9).fill(false);
+const save=()=>LS.s('zd',JSON.stringify(done));
+let authed=LS.g('zauth')=='1';
+let T=[];const iv=(f,m)=>{const id=setInterval(f,m);T.push(id);return id};const clr=()=>{T.forEach(clearInterval);T=[]};
+
+/* tap sounds, sparkles, petal trail */
+let AC;const chime=(f=660)=>{try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g);g.connect(AC.destination);o.start();o.stop(t+.6)}catch(_){}};
+const NOTES=[523,587,659,784,880];let ni=0,lastTrail=0;
+const fx=(x,y,n,spread,list)=>{for(let i=0;i<n;i++){const d=document.createElement('div'),a=i/n*6.28,r=rnd(spread/2,spread);d.textContent=list[i%list.length];d.style.cssText=`position:fixed;z-index:9;left:${x}px;top:${y}px;font-size:15px;pointer-events:none;transition:all .8s ease-out`;document.body.appendChild(d);requestAnimationFrame(()=>{d.style.transform=`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) rotate(${rnd(-90,90)}deg)`;d.style.opacity=0});setTimeout(()=>d.remove(),850)}};
+addEventListener('pointerdown',e=>{chime(NOTES[ni++%5]);try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}fx(e.clientX,e.clientY,8,60,['✨','🌸','💫'])});
+addEventListener('pointermove',e=>{if(e.buttons||e.pointerType=='touch'){const n=Date.now();if(n-lastTrail>90){lastTrail=n;fx(e.clientX,e.clientY,1,25,['🌸'])}}});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+/* background */
+const cv=$('#bg'),cx=cv.getContext('2d');let S=[],P=[];
+function rs(){cv.width=innerWidth;cv.height=innerHeight;S=[...Array(110)].map(()=>({x:rnd(0,cv.width),y:rnd(0,cv.height),r:rnd(.3,1.6),p:rnd(0,6)}));P=[...Array(22)].map(()=>({x:rnd(0,cv.width),y:rnd(0,cv.height),s:rnd(4,9),v:rnd(.2,.7),a:rnd(0,6)}))}
+addEventListener('resize',rs);rs();
+(function f(t){const g=cx.createLinearGradient(0,0,0,cv.height);g.addColorStop(0,'#050a18');g.addColorStop(1,'#0b2c33');cx.globalAlpha=1;cx.fillStyle=g;cx.fillRect(0,0,cv.width,cv.height);
+S.forEach(s=>{cx.globalAlpha=.4+.6*Math.abs(Math.sin(t/1000+s.p));cx.fillStyle='#fff';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+P.forEach(p=>{p.y+=p.v;p.x+=Math.sin(t/900+p.a)*.5;if(p.y>cv.height+10){p.y=-10;p.x=rnd(0,cv.width)}cx.globalAlpha=.55;cx.fillStyle='#ff9ec7';cx.beginPath();cx.ellipse(p.x,p.y,p.s,p.s/2,p.a+t/1500,0,7);cx.fill()});
+requestAnimationFrame(f)})(0);
+
+const dots=()=>'<div class="dots">'+done.map(d=>`<div class="dot ${d?'on':''}"></div>`).join('')+'</div>';
+const gT=i=>GAME_START+i*STEP_DAYS*864e5;
+const gOpen=i=>PREVIEW||Date.now()>=gT(i);
+const fmtD=t=>new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:TZ});
+const fmtL=t=>new Date(t).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',timeZone:TZ});
+const bLeft=()=>Math.max(0,Math.ceil((BDAY-Date.now())/864e5));
+const bLine=()=>bLeft()?`🎂 ${bLeft()} day${bLeft()>1?'s':''} until your birthday`:'🎂 Your birthday is here!';
+const cdBoxes=t=>{let d=t-Date.now();return [['days',864e5],['hrs',36e5],['min',6e4],['sec',1e3]].map(([n,m])=>{const x=Math.floor(d/m);d-=x*m;return `<div style="border:1px solid #5ff5d255;border-radius:12px;padding:8px 10px;min-width:58px"><div class="big">${String(Math.max(x,0)).padStart(2,'0')}</div><div style="font-size:13px">${n}</div></div>`}).join('')};
+
+/* ---------- login → walkthrough → levels page ---------- */
+function login(){
+ app.innerHTML=`<div style="font-size:64px">🌸</div><h1>Welcome</h1><p class="big ku">${NAME_SO}</p><p>Enter your username and password.</p>
+ <p><input id="lu" placeholder="Username" autocapitalize="none" autocomplete="off" style="width:min(78vw,300px)"></p>
+ <p><input id="lp" type="password" placeholder="Password" autocapitalize="none" style="width:min(78vw,300px)"></p>
+ <p id="lm" style="font-size:16px;color:#9fb3d7;min-height:22px"></p>
+ <button class="btn" id="lg">Enter ✨</button><p style="font-size:15px;color:#9fb3d7">${HINT}</p>`;
+ const go=()=>{if($('#lu').value.trim().toLowerCase()==USERNAME.toLowerCase()&&$('#lp').value.trim().toLowerCase()==PASSWORD.toLowerCase()){LS.s('zauth','1');authed=true;intro()}
+  else{$('#lm').textContent='Hmm, that is not right. Try again!';$('#lg').classList.add('shake');setTimeout(()=>$('#lg').classList.remove('shake'),400)}};
+ $('#lg').onclick=go;$('#lp').onkeydown=e=>{if(e.key=='Enter')go()};
+}
+function intro(){clr();if(!authed)return login();if(!LS.g('zseen'))return guide();hub()}
+function guide(){
+ const L=[
+  `<div style="font-size:56px">🌸</div><h2>Welcome, Zhalla</h2><p class="big ku">${NAME_SO}</p><p>This is a small game world made for you by your friend Abdurrahman. Here is a quick tour!</p>`,
+  `<div style="font-size:56px">🎮</div><h2>9 levels, 9 lights</h2><p>Each level is a little game: flowers, stars, riddles and word puzzles. Every level gives you one light ✨ and one message.</p>`,
+  `<div style="font-size:56px">🗓</div><h2>A new level every 3 days</h2><p>Level 1 opens on ${fmtL(gT(0))}. Level 9 opens on your birthday, ${fmtL(gT(8))}.<br>Every level opens at 12:00 AM Hawler time. Locked levels show a countdown.</p>`,
+  `<div style="font-size:56px">👆</div><h2>Play as much as you like</h2><p>No timers and no losing. You can replay any unlocked level whenever you want. Riddles have hints 💡.</p>`,
+  `<div style="font-size:56px">🎂</div><h2>Your birthday level</h2><p>On 17 December the last level opens: a step-by-step birthday surprise with riddles, a word puzzle and a letter.</p>`
+ ];let i=0;
+ const draw=()=>{app.innerHTML=`<div class="card">${L[i]}${dots().replace(/dot (on)?/g,'dot ')}<div class="dots">${L.map((_,k)=>`<div class="dot ${k<=i?'on':''}"></div>`).join('')}</div>
+  ${i?'<button class="btn alt" id="gb">Back</button>':''}<button class="btn" id="gn">${i==L.length-1?'See the levels ✨':'Next'}</button></div>`;
+  app.querySelectorAll('.dots')[0].remove();
+  $('#gn').onclick=()=>{if(i==L.length-1){LS.s('zseen','1');hub()}else{i++;draw()}};if(i)$('#gb').onclick=()=>{i--;draw()}};
+ draw();
+}
+
+function hub(){
+ clr();
+ const tiles=LEVELS.map((g,i)=>{const o=gOpen(i),d=done[i];
+  return `<button class="tile ${d?'dn':o?'':'lk'}" data-i="${i}"><div style="font-size:11px;color:#9fb3d7">Level ${i+1}</div><div style="font-size:28px">${o?g.e:'🔒'}</div><div style="font-size:14px">${g.n}</div><div style="font-size:12px;color:#9fb3d7">${d?'✅ Played':o?'Play':fmtD(gT(i))}</div></button>`}).join('');
+ let nx=null,ni=-1;for(let i=0;i<9;i++)if(!gOpen(i)){nx=gT(i);ni=i;break}
+ app.innerHTML=`<div class="card"><h2>Zhalla's Little Universe</h2><p class="big ku">${NAME_SO}</p>
+ <p style="font-size:17px">${done.filter(Boolean).length} of 9 lights ✨</p>
+ ${nx?`<p style="margin-bottom:0">Level ${ni+1} opens in</p><div id="cd" style="display:flex;gap:8px;justify-content:center;margin:8px 0"></div><p style="font-size:14px;color:#9fb3d7;margin-top:0">${fmtL(nx)}, 12:00 AM Hawler time</p>`:'<p>All levels are open 🌟</p>'}
+ <div class="grid3">${tiles}</div><p id="hm" style="font-size:15px;color:#ff9ec7;min-height:20px">${bLine()}</p><button class="btn" id="bg" style="font-size:16px;padding:7px 18px">How it works</button></div>`;
+ app.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(gOpen(i))play(i);else{b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),300);$('#hm').textContent=`🔒 Level ${i+1} opens on ${fmtL(gT(i))}`}});
+ $('#bg').onclick=()=>{LS.s('zseen','');guide()};
+ if(nx){const tick=()=>{if(nx-Date.now()<=0)return hub();$('#cd').innerHTML=cdBoxes(nx)};tick();iv(tick,1000)}
+}
+
+function play(i){
+ clr();const g=LEVELS[i];if(g.bd)return birthday();
+ app.innerHTML=`<h2>Level ${i+1}: ${g.n}</h2><p>${g.t}</p>${dots()}<div id="stage"></div><p style="font-size:16px;color:#9fb3d7;margin-bottom:0">${g.h}</p><button class="btn alt" id="bk" style="font-size:16px;padding:7px 18px">← Levels</button>`;
+ $('#bk').onclick=hub;g.run($('#stage'),()=>win(i));
+}
+function win(i){
+ clr();done[i]=true;save();
+ app.innerHTML=`<div class="card"><h2>Level ${i+1} complete! 🎉</h2><p class="letter" style="max-height:none">${MESSAGES[i]}</p>${i<8?`<p style="color:#ff9ec7">${bLine()}</p>`:''}<button class="btn" id="nx">Back to levels</button></div>`;
+ [523,659,784,1047].forEach((f,k)=>setTimeout(()=>chime(f),k*160));
+ $('#nx').onclick=hub;
+}
+
+/* ---------- reusable games ---------- */
+const bloomGame=(st,fin)=>{st.insertAdjacentHTML('beforeend','<div style="position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:120px;line-height:1">🌿</div>');
+ const B=[...Array(8)].map(()=>{const b=document.createElement('div');b.className='bloom';b.textContent='🌸';b.style.left=rnd(14,76)+'%';b.style.bottom=rnd(8,34)+'%';st.appendChild(b);return b});
+ let n=0;const h=iv(()=>{const e=document.createElement('div');e.className='t';e.textContent='💧';e.style.transition='top 3s linear';e.style.left=rnd(5,88)+'%';e.style.top='-10%';st.appendChild(e);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>e.style.top='70%'));setTimeout(()=>e.remove(),3200);
+  e.onclick=()=>{e.remove();B[n++].classList.add('on');if(n==8){clearInterval(h);setTimeout(fin,900)}}},650)};
+
+const matchGame=(st,fin)=>{ // candy-crush style: swap neighbours, match 3+
+ const N=6,SY=['🌸','⭐','🐰','🌙','🌿'],GOAL=10,MV=15;let got=0,moves=MV,sel=null,busy=false;
+ st.style.height='min(60vh,460px)';
+ st.innerHTML='<div style="display:flex;justify-content:space-between;padding:10px 16px;font-size:18px"><span id="m1"></span><span id="m2"></span></div><div class="m3"></div>';
+ const bd=st.querySelector('.m3'),R=()=>SY[Math.floor(Math.random()*SY.length)];
+ const g=[...Array(N)].map(()=>Array(N).fill(null));
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++){let s;do{s=R()}while((c>=2&&g[r][c-1]==s&&g[r][c-2]==s)||(r>=2&&g[r-1][c]==s&&g[r-2][c]==s));g[r][c]=s}
+ const info=()=>{$('#m1').textContent=`🌸 ${Math.min(got,GOAL)} / ${GOAL}`;$('#m2').textContent=`Moves: ${moves}`};
+ const draw=(pop)=>{if(!bd.isConnected)return;bd.innerHTML='';for(let r=0;r<N;r++)for(let c=0;c<N;c++){const b=document.createElement('button');b.className='m3c'+(sel&&sel[0]==r&&sel[1]==c?' sel':'')+(pop&&pop.has(r+','+c)?' pop':'');b.textContent=g[r][c]||'';b.onclick=()=>tap(r,c);bd.appendChild(b)}info()};
+ const find=()=>{const m=new Set();for(let r=0;r<N;r++)for(let c=0;c<N;c++){const s=g[r][c];if(!s)continue;
+  if(c<N-2&&g[r][c+1]==s&&g[r][c+2]==s){let k=c;while(k<N&&g[r][k]==s)m.add(r+','+k++)}
+  if(r<N-2&&g[r+1][c]==s&&g[r+2][c]==s){let k=r;while(k<N&&g[k][c]==s)m.add(k+++','+c)}}return m};
+ const loop=()=>{if(!bd.isConnected)return;const m=find();if(!m.size){busy=false;if(got>=GOAL){setTimeout(fin,500)}else if(moves<=0){moves=MV;draw()}return}
+  draw(m);setTimeout(()=>{m.forEach(k=>{const[r,c]=k.split(',').map(Number);if(g[r][c]=='🌸')got++;g[r][c]=null});
+   for(let c=0;c<N;c++){const col=[];for(let r=N-1;r>=0;r--)if(g[r][c])col.push(g[r][c]);while(col.length<N)col.push(R());for(let r=N-1;r>=0;r--)g[r][c]=col[N-1-r]}
+   draw();setTimeout(loop,250)},260)};
+ const tap=(r,c)=>{if(busy)return;if(!sel){sel=[r,c];return draw()}
+  const[a,b]=sel;if(a==r&&b==c){sel=null;return draw()}
+  if(Math.abs(a-r)+Math.abs(b-c)!=1){sel=[r,c];return draw()}
+  [g[a][b],g[r][c]]=[g[r][c],g[a][b]];sel=null;
+  if(!find().size){[g[a][b],g[r][c]]=[g[r][c],g[a][b]];draw();return}
+  moves--;busy=true;loop()};
+ draw()};
+
+const riddleGame=L=>(st,fin)=>{let k=0,f=0;const show=()=>{const r=L[k];f=0;
+ st.innerHTML=`<div style="padding:14px"><p style="font-size:15px;color:#9fb3d7">Riddle ${k+1} of ${L.length}</p><p class="big" style="font-size:21px">${r.q}</p><p><input id="ra" placeholder="Your answer" autocomplete="off" style="width:80%"></p><p id="rm" style="min-height:24px;font-size:16px;color:#ff9ec7"></p><button class="btn" id="rc" style="margin-top:0">Check</button><button class="btn alt" id="rh" style="margin-top:0">Hint 💡</button></div>`;
+ const next=()=>{if(++k==L.length)fin();else show()};$('#rh').onclick=()=>$('#rm').textContent=r.hint;
+ const chk=()=>{const v=$('#ra').value.toLowerCase().trim();if(!v)return;
+  if(r.a.some(x=>v.includes(x))){$('#rm').textContent='Yes! 🌟';setTimeout(next,700)}
+  else{f++;const ra=$('#ra');ra.classList.add('shake');setTimeout(()=>ra.classList.remove('shake'),300);
+   if(f>=3){$('#rm').textContent='The answer: '+r.show+'. Tap Check to continue.';$('#rc').onclick=next}else $('#rm').textContent='Not quite, try again!'}};
+ $('#rc').onclick=chk;$('#ra').onkeydown=e=>{if(e.key=='Enter')$('#rc').onclick()}};show()};
+
+const wordGame=W=>(st,fin)=>{let k=0;const show=()=>{const w=W[k];let sc;do{sc=[...w.w].sort(()=>Math.random()-.5)}while(sc.join('')==w.w);let ans=[];
+ st.innerHTML=`<div style="padding:12px"><p style="font-size:15px;color:#9fb3d7">Word ${k+1} of ${W.length}</p><p style="font-size:19px">${w.c}</p><div id="wa" class="big" style="letter-spacing:6px;min-height:46px;font-size:28px"></div><div id="wt"></div><button class="btn alt" id="wb" style="font-size:16px;padding:6px 16px">⌫ Undo</button></div>`;
+ const wa=$('#wa');const draw=()=>{wa.textContent=ans.map(i=>sc[i]).join('')||'· · ·';[...$('#wt').children].forEach((b,i)=>b.style.opacity=ans.includes(i)?.25:1)};
+ sc.forEach((ch,i)=>{const b=document.createElement('button');b.className='lt';b.textContent=ch;b.onclick=()=>{if(ans.includes(i))return;ans.push(i);draw();
+  if(ans.length==w.w.length){if(ans.map(j=>sc[j]).join('')==w.w){wa.style.color='#f4d58d';setTimeout(()=>{if(++k==W.length)fin();else show()},700)}
+   else{wa.classList.add('shake');setTimeout(()=>{ans=[];wa.classList.remove('shake');draw()},400)}}};$('#wt').appendChild(b)});
+ $('#wb').onclick=()=>{ans.pop();draw()};draw()};show()};
+
+const constGame=(st,fin)=>{
+ const W=st.clientWidth,H=st.clientHeight,cx=W/2,cy=H/2,R=Math.min(W,H)*.34,NS='http://www.w3.org/2000/svg';
+ const sv=document.createElementNS(NS,'svg');sv.setAttribute('width','100%');sv.setAttribute('height','100%');sv.style.position='absolute';sv.style.left='0';sv.style.top='0';sv.style.filter='drop-shadow(0 0 8px #ff9ec7aa)';st.appendChild(sv);
+ const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);sv.appendChild(e);return e};
+ const pts=[...Array(5)].map((_,k)=>{const a=(-90+72*k)*Math.PI/180;return{x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R,d:-90+72*k}});
+ const line=(a,b)=>el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#f4d58d','stroke-width':2});
+ const bloom=()=>{pts.forEach(p=>{const px=cx+(p.x-cx)*.55,py=cy+(p.y-cy)*.55;
+   const g=el('g',{transform:`translate(${px} ${py}) rotate(${p.d})`});
+   const e=document.createElementNS(NS,'ellipse');for(const k in {cx:0,cy:0,rx:R*.52,ry:R*.3,fill:'#ff9ec7',opacity:0})e.setAttribute(k,{cx:0,cy:0,rx:R*.52,ry:R*.3,fill:'#ff9ec7',opacity:0}[k]);
+   e.style.transition='opacity 1.2s';g.appendChild(e);requestAnimationFrame(()=>requestAnimationFrame(()=>e.setAttribute('opacity',.8)))});
+  const c=el('circle',{cx:cx,cy:cy,r:R*.17,fill:'#f4d58d',opacity:0});c.style.transition='opacity 1.2s';requestAnimationFrame(()=>requestAnimationFrame(()=>c.setAttribute('opacity',1)));
+  setTimeout(()=>{const o=document.createElement('div');o.style.cssText='position:absolute;inset:0;z-index:5;background:#0b1730ee;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;animation:fade 1s';
+   o.innerHTML=`<div style="font-size:44px">🌸</div><p style="font-size:19px;line-height:1.45">${FRAGRANCE_WISH}</p><button class="btn" id="fw">Continue ✨</button>`;st.appendChild(o);o.querySelector('#fw').onclick=fin},2600)};
+ let nx=0;pts.forEach((p,i)=>{const d=document.createElement('div');d.className='star';d.style.left=p.x+'px';d.style.top=p.y+'px';d.style.zIndex=2;d.textContent=i+1;st.appendChild(d);
+  d.onclick=()=>{if(i!=nx){d.classList.add('shake');return}d.classList.add('ok');if(i)line(pts[i-1],p);
+   if(++nx==5){setTimeout(()=>{line(p,pts[0]);setTimeout(bloom,500)},300)}}})};
+
+const memGame=(st,fin)=>{const sy=['🌸','⭐','🐰','🌙','📖','🌿'],c=[...sy,...sy].sort(()=>Math.random()-.5);
+ st.innerHTML='<div class="mg"></div>';let open=[],lk=false,pairs=0;
+ c.forEach(s=>{const b=document.createElement('button');b.className='mc';b.dataset.s=s;b.textContent='?';st.firstChild.appendChild(b);
+  b.onclick=()=>{if(lk||b.classList.contains('on')||b.classList.contains('ok'))return;b.classList.add('on');b.textContent=s;open.push(b);
+   if(open.length==2){const[x,y]=open;open=[];if(x.dataset.s==y.dataset.s){x.className=y.className='mc ok';if(++pairs==6)setTimeout(fin,600)}
+    else{lk=true;setTimeout(()=>{[x,y].forEach(z=>{z.className='mc';z.textContent='?'});lk=false},700)}}}})};
+
+const quizGame=(st,fin)=>{let k=0;const show=()=>{const q=QUIZ[k];st.innerHTML=`<div class="q" style="padding-top:22px"><p class="big">${q.q}</p></div>`;
+ q.a.map((t,i)=>({t,ok:q.any||i==0})).sort(()=>Math.random()-.5).forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.t;
+  b.onclick=()=>{if(o.ok){if(++k==QUIZ.length)fin();else show()}else{b.classList.add('shake');b.style.opacity=.35}};st.firstChild.appendChild(b)})};show()};
+
+const starGame=(st,fin)=>{let n=0;st.insertAdjacentHTML('beforeend','<div style="position:absolute;bottom:8px;right:12px;font-size:16px">catch 8 ⭐</div>');
+ const h=iv(()=>{const e=document.createElement('div');e.className='t';e.textContent='⭐';e.style.transition='top 3s linear';e.style.left=rnd(5,88)+'%';e.style.top='-10%';st.appendChild(e);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>e.style.top='100%'));setTimeout(()=>e.remove(),3200);
+ e.onclick=()=>{e.remove();if(++n==8){clearInterval(h);fin()}}},700)};
+
+const giftGame=(st,fin)=>{let n=0;const g=document.createElement('div');g.className='gift';g.textContent='🎁';st.appendChild(g);
+ g.onclick=()=>{n++;g.style.transform=`translate(-50%,-50%) scale(${1+n*.18}) rotate(${n%2?8:-8}deg)`;if(n==3)setTimeout(fin,400)}};
+
+const LEVELS=[
+ {n:'Oleander',e:'🌸',t:'Grow the oleander 🌸',h:'Tap raindrops 💧 to make 8 flowers bloom.',run:bloomGame},
+ {n:'Petal Match',e:'🌺',t:'Match 3 or more, like candy 🌺',h:'Tap a tile, then a neighbour to swap. Collect 10 🌸.',run:matchGame},
+ {n:'Riddles',e:'🧩',t:'Three riddles 🧩',h:'Type your answer. Use 💡 for a hint.',run:riddleGame(RIDDLES)},
+ {n:'Constellation',e:'🌌',t:'Connect the stars to bloom an oleander 🌌🌸',h:'Tap the stars in order, 1 → 5.',run:constGame},
+ {n:'Word Puzzle',e:'🔤',t:'Unscramble the words 🔤',h:'Tap the letters in the right order.',run:wordGame(WORDS)},
+ {n:'Memory',e:'🃏',t:'Match the pairs 🃏',h:'Flip cards and find all 6 pairs.',run:memGame},
+ {n:'About You',e:'🌙',t:'How well do I know you? 🌙',h:'Answer 4 questions.',run:quizGame},
+ {n:'Star Rain',e:'⭐',t:'Stars are falling ⭐',h:'Tap 8 stars before they vanish.',run:starGame},
+ {n:'Birthday',e:'🎂',t:'Your birthday surprise 🎂',h:'',bd:true}
+];
+
+/* ---------- Level 9: birthday, one step at a time ---------- */
+function birthday(){
+ clr();let s=0;const N=7;
+ const dd=()=>`<div class="dots">${[...Array(N)].map((_,i)=>`<div class="dot ${i<=s?'on':''}"></div>`).join('')}</div>`;
+ const shell=(t,h)=>{app.innerHTML=`<h2>Step ${s+1} of ${N}</h2><p>${t}</p>${dd()}<div id="stage"></div><p style="font-size:16px;color:#9fb3d7">${h}</p>`;return $('#stage')};
+ const card=(html,btn)=>{app.innerHTML=`<div class="card"><h2 style="font-size:18px">Step ${s+1} of ${N}</h2>${dd()}${html}<button class="btn" id="sn">${btn}</button></div>`;$('#sn').onclick=adv};
+ const adv=()=>{clr();s++;s<N?steps[s]():finish()};
+ const finish=()=>{confetti();win(8)};
+ const steps=[
+  ()=>{confetti();card(`<div style="font-size:50px">🎂</div><h2>Happy 18th Birthday, Zhalla!</h2><p class="big ku">${SORANI}</p><p class="big ur">${URDU}</p><p>Welcome to your birthday. Seven small steps, one at a time.</p>`,'Start ✨')},
+  ()=>riddleGame(BDAY_RIDDLES)(shell('Three birthday riddles 🧩','Type your answer. Use 💡 for a hint.'),adv),
+  ()=>wordGame(BDAY_WORDS)(shell('Unscramble the words 🔤','Tap the letters in the right order.'),adv),
+  ()=>giftGame(shell('Open your gift 🎁','Tap the gift 3 times.'),adv),
+  ()=>{card(`<h2>Make a wish 🏮</h2><div class="sky" id="sky"></div><p><input id="wt" placeholder="Type a wish (optional)" maxlength="40"></p><button class="btn alt" id="rl" style="margin-top:0">Release lantern</button>`,'Continue');
+   $('#rl').onclick=()=>{const d=document.createElement('div');d.className='lan';d.style.left=rnd(5,70)+'%';d.innerHTML=`<b>🏮</b>${$('#wt').value.replace(/</g,'&lt;')}`;$('#sky').appendChild(d);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.bottom='110%';d.style.opacity='0'}));setTimeout(()=>d.remove(),9500);$('#wt').value=''}},
+  ()=>{let i=0;card(`<h2>18 wishes for 18</h2><div class="wish" id="w"></div><p id="c" style="color:#9fb3d7"></p>`,'Next wish ✨');
+   const show=()=>{$('#w').textContent=WISHES[i];$('#c').textContent=`${i+1} / ${WISHES.length}`;$('#sn').textContent=i<WISHES.length-1?'Next wish ✨':'Continue'};show();
+   $('#sn').onclick=()=>{if(i<WISHES.length-1){i++;show()}else adv()}},
+  ()=>card(`<h2>For Zhalla ✉️</h2><div class="letter">${FINAL_LETTER}</div><p class="ur">${URDU}</p>`,'Finish 🎉')
+ ];
+ steps[0]();
+}
+function confetti(){const cols=['#ff9ec7','#5ff5d2','#f4d58d','#ffffff'];
+ for(let i=0;i<90;i++){const e=document.createElement('div');e.style.cssText=`position:fixed;z-index:5;top:-10px;left:${rnd(0,100)}vw;width:9px;height:9px;background:${cols[i%4]};border-radius:50%;pointer-events:none;transition:all ${rnd(2,4)}s ease-in`;
+  document.body.appendChild(e);requestAnimationFrame(()=>{e.style.top='105vh';e.style.transform=`translateX(${rnd(-80,80)}px)`});setTimeout(()=>e.remove(),4500)}}
+intro();
+</script></body></html>
